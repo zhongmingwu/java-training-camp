@@ -21,6 +21,7 @@ public class AsyncExecutionTest {
     private final Stopwatch stopwatch = Stopwatch.createUnstarted();
     private String name;
     private long result;
+    private volatile boolean isDone;
 
     @Before
     public void setUp() {
@@ -86,6 +87,21 @@ public class AsyncExecutionTest {
         }, name).start();
 
         LockSupport.park();
+    }
+
+    @Test
+    public void m_5_volatile() {
+        name = getMethodName();
+
+        new Thread(() -> {
+            result = FibonacciUtil.fibonacci(N);
+            isDone = true;
+        }, name).start();
+
+        while (!isDone) {
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(10));
+        }
+        isDone = false;
     }
 
     //@Test
