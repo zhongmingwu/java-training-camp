@@ -9,7 +9,8 @@ public class FibonacciUtil {
     // 4 - 3
     // 5 - 5
     public static long fibonacci(int n) {
-        int N = n;
+        String threadName = Thread.currentThread().getName();
+        System.out.printf("[%s] is starting...\n", threadName);
         if (n < 0) {
             throw new IllegalArgumentException("n must greater than or equal to 0");
         }
@@ -18,7 +19,7 @@ public class FibonacciUtil {
         while (n-- > 0) {
             a = (b += a) - a;
         }
-        System.out.printf("worker_thread=[%s], fibonacci(%s)=%s, ", Thread.currentThread().getName(), N, a);
+        System.out.printf("[%s] is done!\n", threadName);
         return a;
     }
 }

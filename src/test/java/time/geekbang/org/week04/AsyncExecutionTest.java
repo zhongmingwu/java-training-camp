@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,6 +20,7 @@ public class AsyncExecutionTest {
 
     private static final int N = 36;
     private static final long FIBONACCI_N = 14930352L;
+    private static final long SLEEP_MS = 500L;
 
     private final Stopwatch stopwatch = Stopwatch.createUnstarted();
     private String name;
@@ -44,6 +46,8 @@ public class AsyncExecutionTest {
 
         Thread thread = new Thread(() -> result = FibonacciUtil.fibonacci(N), name);
         thread.start();
+
+        System.out.printf("[%s] waiting for [%s]\n", Thread.currentThread().getName(), thread.getName());
         thread.join();
     }
 
@@ -52,14 +56,23 @@ public class AsyncExecutionTest {
         name = getMethodName();
 
         new Thread(() -> {
+            System.out.printf("[%s] try to occupy monitor lock\n", Thread.currentThread().getName());
             synchronized (this) {
+                System.out.printf("[%s] occupies monitor lock successfully\n", Thread.currentThread().getName());
+                try {
+                    TimeUnit.MILLISECONDS.sleep(SLEEP_MS * 2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 result = FibonacciUtil.fibonacci(N);
                 notifyAll();
             }
         }, name).start();
 
-        TimeUnit.MILLISECONDS.sleep(10);
+        TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+        System.out.printf("[%s] try to occupy monitor lock\n", Thread.currentThread().getName());
         synchronized (this) {
+            System.out.printf("[%s] occupies monitor lock successfully\n", Thread.currentThread().getName());
         }
     }
 
@@ -69,12 +82,19 @@ public class AsyncExecutionTest {
 
         Thread thread = Thread.currentThread();
         new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             result = FibonacciUtil.fibonacci(N);
             thread.interrupt();
         }, name).start();
 
+        System.out.printf("[%s] try to occupy monitor lock\n", Thread.currentThread().getName());
         synchronized (this) {
-            wait();
+            System.out.printf("[%s] occupies monitor lock successfully\n", Thread.currentThread().getName());
+            wait(); // throw InterruptedException
         }
     }
 
@@ -120,13 +140,41 @@ public class AsyncExecutionTest {
             }
         }, name).start();
 
-        TimeUnit.MILLISECONDS.sleep(10);
+        TimeUnit.MILLISECONDS.sleep(500);
         try {
             lock.lock();
         } finally {
             lock.unlock();
         }
     }
+
+    @Test
+    public void m_7_condition() throws InterruptedException {
+        name = getMethodName();
+
+        Lock lock = new ReentrantLock();
+        Condition condition = lock.newCondition();
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+                lock.lock();
+                result = FibonacciUtil.fibonacci(N);
+                condition.signalAll();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                lock.unlock();
+            }
+        }, name).start();
+
+        try {
+            lock.lock();
+            condition.await();
+        } finally {
+            lock.unlock();
+        }
+    }
+
 
     //@Test
     //public void futureTask() throws ExecutionException, InterruptedException {
