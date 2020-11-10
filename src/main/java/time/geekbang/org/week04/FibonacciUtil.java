@@ -1,0 +1,22 @@
+package time.geekbang.org.week04;
+
+public class FibonacciUtil {
+
+    // 0 - 0
+    // 1 - 1
+    // 2 - 1
+    // 3 - 2
+    // 4 - 3
+    // 5 - 5
+    public static long cal(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n must greater than or equal to 0");
+        }
+
+        int a = 0, b = 1;
+        while (n-- > 0) {
+            a = (b += a) - a;
+        }
+        return a;
+    }
+}
