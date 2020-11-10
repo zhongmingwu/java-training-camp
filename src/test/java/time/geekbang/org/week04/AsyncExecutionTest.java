@@ -43,22 +43,22 @@ public class AsyncExecutionTest {
         thread.join();
     }
 
-    //@Test
-    //public void m_2_notification() throws InterruptedException {
-    //    name = getMethodName();
-    //
-    //    new Thread(() -> {
-    //        synchronized (this) {
-    //            result = FibonacciUtil.fibonacci(N);
-    //            notifyAll();
-    //        }
-    //    }, name).start();
-    //
-    //    TimeUnit.MILLISECONDS.sleep(100);
-    //    synchronized (this) {
-    //    }
-    //}
-    //
+    @Test
+    public void m_2_notification() throws InterruptedException {
+        name = getMethodName();
+
+        new Thread(() -> {
+            synchronized (this) {
+                result = FibonacciUtil.fibonacci(N);
+                notifyAll();
+            }
+        }, name).start();
+
+        TimeUnit.MILLISECONDS.sleep(100);
+        synchronized (this) {
+        }
+    }
+
     //@Test
     //public void m_3_interrupt() {
     //    name = getMethodName();
