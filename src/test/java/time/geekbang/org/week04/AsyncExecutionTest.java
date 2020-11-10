@@ -117,11 +117,21 @@ public class AsyncExecutionTest {
 
         Thread thread = Thread.currentThread();
         new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             result = FibonacciUtil.fibonacci(N);
+            String threadName = Thread.currentThread().getName();
+            System.out.printf("[%s] try to unpark [%s]\n", threadName, thread.getName());
             LockSupport.unpark(thread);
         }, name).start();
 
+        String threadName = Thread.currentThread().getName();
+        System.out.printf("[%s] is going to park\n", threadName);
         LockSupport.park();
+        System.out.printf("[%s] is awakened\n", threadName);
     }
 
     @Test
