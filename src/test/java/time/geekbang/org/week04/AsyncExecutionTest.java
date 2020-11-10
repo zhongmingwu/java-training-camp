@@ -8,7 +8,9 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.Assert.assertEquals;
 
@@ -56,7 +58,7 @@ public class AsyncExecutionTest {
             }
         }, name).start();
 
-        TimeUnit.MILLISECONDS.sleep(100);
+        TimeUnit.MILLISECONDS.sleep(10);
         synchronized (this) {
         }
     }
@@ -102,6 +104,28 @@ public class AsyncExecutionTest {
             LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(10));
         }
         isDone = false;
+    }
+
+    @Test
+    public void m_6_lock() throws InterruptedException {
+        name = getMethodName();
+
+        Lock lock = new ReentrantLock();
+        new Thread(() -> {
+            try {
+                lock.lock();
+                result = FibonacciUtil.fibonacci(N);
+            } finally {
+                lock.unlock();
+            }
+        }, name).start();
+
+        TimeUnit.MILLISECONDS.sleep(10);
+        try {
+            lock.lock();
+        } finally {
+            lock.unlock();
+        }
     }
 
     //@Test
