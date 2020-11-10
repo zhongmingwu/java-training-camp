@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import static org.junit.Assert.assertEquals;
 
@@ -35,7 +36,7 @@ public class AsyncExecutionTest {
     }
 
     @Test
-    public void m_1_threadJoin() throws InterruptedException {
+    public void m_1_join() throws InterruptedException {
         name = getMethodName();
 
         Thread thread = new Thread(() -> result = FibonacciUtil.fibonacci(N), name);
@@ -59,36 +60,33 @@ public class AsyncExecutionTest {
         }
     }
 
-    //@Test
-    //public void m_3_interrupt() {
-    //    name = getMethodName();
-    //
-    //    Thread thread = Thread.currentThread();
-    //    new Thread(() -> {
-    //        result = FibonacciUtil.fibonacci(N);
-    //        thread.interrupt();
-    //    }, name).start();
-    //
-    //    try {
-    //        synchronized (this) {
-    //            wait();
-    //        }
-    //    } catch (InterruptedException ignored) {
-    //    }
-    //}
-    //
-    //@Test
-    //public void m_4_park() {
-    //    name = getMethodName();
-    //
-    //    Thread thread = Thread.currentThread();
-    //    new Thread(() -> {
-    //        result = FibonacciUtil.fibonacci(N);
-    //        LockSupport.unpark(thread);
-    //    }, name).start();
-    //
-    //    LockSupport.park();
-    //}
+    @Test(expected = InterruptedException.class)
+    public void m_3_interrupt() throws InterruptedException {
+        name = getMethodName();
+
+        Thread thread = Thread.currentThread();
+        new Thread(() -> {
+            result = FibonacciUtil.fibonacci(N);
+            thread.interrupt();
+        }, name).start();
+
+        synchronized (this) {
+            wait();
+        }
+    }
+
+    @Test
+    public void m_4_park() {
+        name = getMethodName();
+
+        Thread thread = Thread.currentThread();
+        new Thread(() -> {
+            result = FibonacciUtil.fibonacci(N);
+            LockSupport.unpark(thread);
+        }, name).start();
+
+        LockSupport.park();
+    }
 
     //@Test
     //public void futureTask() throws ExecutionException, InterruptedException {
