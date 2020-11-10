@@ -56,9 +56,10 @@ public class AsyncExecutionTest {
         name = getMethodName();
 
         new Thread(() -> {
-            System.out.printf("[%s] try to occupy monitor lock\n", Thread.currentThread().getName());
+            String threadName = Thread.currentThread().getName();
+            System.out.printf("[%s] try to occupy monitor lock\n", threadName);
             synchronized (this) {
-                System.out.printf("[%s] occupies monitor lock successfully\n", Thread.currentThread().getName());
+                System.out.printf("[%s] occupies monitor lock successfully\n", threadName);
                 try {
                     TimeUnit.MILLISECONDS.sleep(SLEEP_MS * 2);
                 } catch (InterruptedException e) {
@@ -67,13 +68,16 @@ public class AsyncExecutionTest {
                 result = FibonacciUtil.fibonacci(N);
                 notifyAll();
             }
+            System.out.printf("[%s] release monitor lock\n", threadName);
         }, name).start();
 
         TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
-        System.out.printf("[%s] try to occupy monitor lock\n", Thread.currentThread().getName());
+        String threadName = Thread.currentThread().getName();
+        System.out.printf("[%s] try to occupy monitor lock\n", threadName);
         synchronized (this) {
-            System.out.printf("[%s] occupies monitor lock successfully\n", Thread.currentThread().getName());
+            System.out.printf("[%s] occupies monitor lock successfully\n", threadName);
         }
+        System.out.printf("[%s] release monitor lock\n", threadName);
     }
 
     @Test(expected = InterruptedException.class)
