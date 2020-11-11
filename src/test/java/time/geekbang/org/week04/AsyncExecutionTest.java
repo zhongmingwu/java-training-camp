@@ -7,7 +7,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
@@ -21,149 +21,116 @@ public class AsyncExecutionTest {
     private static final int N = 36;
     private static final long FIBONACCI_N = 14930352L;
     private static final long SLEEP_MS = 500L;
+    private static final Stopwatch STOP_WATCH = Stopwatch.createUnstarted();
 
-    private final Stopwatch stopwatch = Stopwatch.createUnstarted();
     private String name;
-    private long result;
+    private long fibonacci;
     private volatile boolean isDone;
 
     @Before
     public void setUp() {
-        result = Long.MIN_VALUE;
-        stopwatch.start();
+        fibonacci = Long.MIN_VALUE;
+        STOP_WATCH.start();
     }
 
     @After
     public void destroy() {
-        System.out.printf("invoked_method=[%s], elapsed_ms=%s\n", name, stopwatch.elapsed(TimeUnit.MILLISECONDS));
-        assertEquals(FIBONACCI_N, result);
-        stopwatch.reset();
+        System.out.printf("invoked_method=[%s], elapsed_ms=%s\n", name, STOP_WATCH.elapsed(TimeUnit.MILLISECONDS));
+        assertEquals(FIBONACCI_N, fibonacci);
+        STOP_WATCH.reset();
     }
 
     @Test
-    public void m_1_join() throws InterruptedException {
-        name = getMethodName();
-
-        Thread thread = new Thread(() -> result = FibonacciUtil.fibonacci(N), name);
-        thread.start();
-
-        System.out.printf("[%s] waiting for [%s]\n", Thread.currentThread().getName(), thread.getName());
-        thread.join();
-    }
-
-    @Test
-    public void m_2_notification() throws InterruptedException {
-        name = getMethodName();
-
+    public void m_01_volatile() {
         new Thread(() -> {
-            String threadName = Thread.currentThread().getName();
-            System.out.printf("[%s] try to occupy monitor lock\n", threadName);
-            synchronized (this) {
-                System.out.printf("[%s] occupies monitor lock successfully\n", threadName);
-                try {
-                    TimeUnit.MILLISECONDS.sleep(SLEEP_MS * 2);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                result = FibonacciUtil.fibonacci(N);
-                notifyAll();
-            }
-            System.out.printf("[%s] release monitor lock\n", threadName);
-        }, name).start();
-
-        TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
-        String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] try to occupy monitor lock\n", threadName);
-        synchronized (this) {
-            System.out.printf("[%s] occupies monitor lock successfully\n", threadName);
-        }
-        System.out.printf("[%s] release monitor lock\n", threadName);
-    }
-
-    @Test
-    public void m_3_interrupt() {
-        name = getMethodName();
-
-        Thread thread = Thread.currentThread();
-        new Thread(() -> {
-            try {
-                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            result = FibonacciUtil.fibonacci(N);
-            System.out.printf("[%s] interrupt [%s]\n", Thread.currentThread().getName(), thread.getName());
-            thread.interrupt();
-        }, name).start();
-
-        String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] try to occupy monitor lock\n", threadName);
-        synchronized (this) {
-            System.out.printf("[%s] occupies monitor lock successfully\n", threadName);
-            try {
-                System.out.printf("[%s] release monitor lock and wait, isInterrupted=%s\n", threadName,
-                        Thread.currentThread().isInterrupted());
-                wait(); // throw InterruptedException
-            } catch (InterruptedException e) {
-                System.out.printf("[%s] throw InterruptedException, isInterrupted=%s\n", threadName,
-                        Thread.currentThread().isInterrupted());
-            }
-        }
-    }
-
-    @Test
-    public void m_4_park() {
-        name = getMethodName();
-
-        Thread thread = Thread.currentThread();
-        new Thread(() -> {
-            try {
-                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            result = FibonacciUtil.fibonacci(N);
-            String threadName = Thread.currentThread().getName();
-            System.out.printf("[%s] try to unpark [%s]\n", threadName, thread.getName());
-            LockSupport.unpark(thread);
-        }, name).start();
-
-        String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] is going to park\n", threadName);
-        LockSupport.park();
-        System.out.printf("[%s] is awakened\n", threadName);
-    }
-
-    @Test
-    public void m_5_volatile() {
-        name = getMethodName();
-
-        new Thread(() -> {
-            result = FibonacciUtil.fibonacci(N);
+            fibonacci = FibonacciUtil.fibonacci(N);
             isDone = true;
-        }, name).start();
+        }, name = getMethodName()).start();
 
         while (!isDone) {
-            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(10));
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(50));
         }
         isDone = false;
     }
 
     @Test
-    public void m_6_lock() throws InterruptedException {
-        name = getMethodName();
+    public void m_02_join() throws InterruptedException {
+        Thread thread = new Thread(() -> fibonacci = FibonacciUtil.fibonacci(N), name = getMethodName());
+        thread.start();
+        thread.join();
+    }
 
+    @Test
+    public void m_03_synchronized() throws InterruptedException {
+        new Thread(() -> {
+            synchronized (this) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(SLEEP_MS * 2);
+                    fibonacci = FibonacciUtil.fibonacci(N);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, name = getMethodName()).start();
+
+        TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+        synchronized (this) {
+        }
+    }
+
+    @Test
+    public void m_04_notify() throws InterruptedException {
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+                synchronized (this) {
+                    fibonacci = FibonacciUtil.fibonacci(N);
+                    notifyAll();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }, name = getMethodName()).start();
+
+        synchronized (this) {
+            wait();
+        }
+    }
+
+    @Test(expected = InterruptedException.class)
+    public void m_05_interrupt() throws InterruptedException {
+        Thread thread = Thread.currentThread();
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+                fibonacci = FibonacciUtil.fibonacci(N);
+                thread.interrupt();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }, name = getMethodName()).start();
+
+        synchronized (this) {
+            wait();
+        }
+    }
+
+    @Test
+    public void m_06_lock() throws InterruptedException {
         Lock lock = new ReentrantLock();
         new Thread(() -> {
             try {
                 lock.lock();
-                result = FibonacciUtil.fibonacci(N);
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS * 2);
+                fibonacci = FibonacciUtil.fibonacci(N);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             } finally {
                 lock.unlock();
             }
-        }, name).start();
+        }, name = getMethodName()).start();
 
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
         try {
             lock.lock();
         } finally {
@@ -172,23 +139,21 @@ public class AsyncExecutionTest {
     }
 
     @Test
-    public void m_7_condition() throws InterruptedException {
-        name = getMethodName();
-
+    public void m_07_condition() throws InterruptedException {
         Lock lock = new ReentrantLock();
         Condition condition = lock.newCondition();
         new Thread(() -> {
             try {
-                TimeUnit.MILLISECONDS.sleep(500);
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
                 lock.lock();
-                result = FibonacciUtil.fibonacci(N);
+                fibonacci = FibonacciUtil.fibonacci(N);
                 condition.signalAll();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } finally {
                 lock.unlock();
             }
-        }, name).start();
+        }, name = getMethodName()).start();
 
         try {
             lock.lock();
@@ -198,97 +163,102 @@ public class AsyncExecutionTest {
         }
     }
 
+    @Test
+    public void m_08_semaphore() throws InterruptedException {
+        Semaphore semaphore = new Semaphore(1);
+        new Thread(() -> {
+            try {
+                semaphore.acquire();
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS * 2);
+                fibonacci = FibonacciUtil.fibonacci(N);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                semaphore.release();
+            }
+        }, name = getMethodName()).start();
 
-    //@Test
-    //public void futureTask() throws ExecutionException, InterruptedException {
-    //    method = new Object() {
-    //    }.getClass().getEnclosingMethod().getName();
-    //
-    //    FutureTask<Long> task = new FutureTask<>(() -> FibonacciUtil.fibonacci(N));
-    //    new Thread(task).start();
-    //    result = task.get();
-    //}
-    //
-    //@Test
-    //public void executorService() throws ExecutionException, InterruptedException {
-    //    method = new Object() {
-    //    }.getClass().getEnclosingMethod().getName();
-    //
-    //    ExecutorService executorService = Executors.newCachedThreadPool();
-    //    FutureTask<Long> task = new FutureTask<>(() -> FibonacciUtil.fibonacci(N));
-    //    executorService.submit(task);
-    //    executorService.shutdown();
-    //    result = task.get();
-    //}
-    //
-    //@Test
-    //public void semaphore() throws InterruptedException {
-    //    method = new Object() {
-    //    }.getClass().getEnclosingMethod().getName();
-    //
-    //    Semaphore semaphore = new Semaphore(1);
-    //    new Thread(() -> {
-    //        try {
-    //            semaphore.acquire();
-    //            result = FibonacciUtil.fibonacci(N);
-    //        } catch (InterruptedException e) {
-    //            e.printStackTrace();
-    //        } finally {
-    //            semaphore.release();
-    //        }
-    //    }, method).start();
-    //
-    //    TimeUnit.MILLISECONDS.sleep(100);
-    //    semaphore.acquire();
-    //    semaphore.release();
-    //}
-    //
-    //@Test
-    //public void countDownLatch() throws InterruptedException {
-    //    method = new Object() {
-    //    }.getClass().getEnclosingMethod().getName();
-    //
-    //    CountDownLatch countDownLatch = new CountDownLatch(1);
-    //    new Thread(() -> {
-    //        result = FibonacciUtil.fibonacci(N);
-    //        countDownLatch.countDown();
-    //    }, method).start();
-    //    countDownLatch.await();
-    //}
-    //
-    //@Test
-    //public void cyclicBarrier() throws InterruptedException {
-    //    method = new Object() {
-    //    }.getClass().getEnclosingMethod().getName();
-    //
-    //    Object o = new Object();
-    //    CyclicBarrier cyclicBarrier = new CyclicBarrier(1, () -> result = FibonacciUtil.fibonacci(N));
-    //    new Thread(() -> {
-    //        try {
-    //            synchronized (o) {
-    //                result = FibonacciUtil.fibonacci(N);
-    //                cyclicBarrier.await();
-    //            }
-    //        } catch (InterruptedException | BrokenBarrierException e) {
-    //            e.printStackTrace();
-    //        }
-    //    }, method).start();
-    //
-    //    TimeUnit.MILLISECONDS.sleep(100);
-    //    synchronized (o) {
-    //        // do nothing, just wait!
-    //    }
-    //}
-    //
-    //@Test
-    //public void completableFuture() {
-    //    method = new Object() {
-    //    }.getClass().getEnclosingMethod().getName();
-    //
-    //    result = CompletableFuture.supplyAsync(() -> FibonacciUtil.fibonacci(N)).join();
-    //}
+        TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+        try {
+            semaphore.acquire();
+        } finally {
+            semaphore.release();
+        }
+    }
 
-    private String getMethodName() {
+    @Test
+    public void m_09_countDownLatch() throws InterruptedException {
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        new Thread(() -> {
+            try {
+                TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+                fibonacci = FibonacciUtil.fibonacci(N);
+                countDownLatch.countDown();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }, name = getMethodName()).start();
+
+        countDownLatch.await();
+    }
+
+    @Test
+    public void m_10_cyclicBarrier() throws InterruptedException {
+        Object o = new Object();
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(1, () -> {
+            synchronized (o) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(SLEEP_MS * 2);
+                    fibonacci = FibonacciUtil.fibonacci(N);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        new Thread(() -> {
+            try {
+                cyclicBarrier.await();
+            } catch (InterruptedException | BrokenBarrierException e) {
+                e.printStackTrace();
+            }
+        }, name = getMethodName()).start();
+
+        TimeUnit.MILLISECONDS.sleep(SLEEP_MS);
+        synchronized (o) {
+        }
+    }
+
+    @Test
+    public void m_11_futureTask() throws ExecutionException, InterruptedException {
+        FutureTask<Long> task = new FutureTask<>(() -> FibonacciUtil.fibonacci(N));
+        new Thread(task, name = getMethodName()).start();
+        fibonacci = task.get();
+    }
+
+    @Test
+    public void m_12_executorService() throws ExecutionException, InterruptedException {
+        name = getMethodName();
+        int processors = Runtime.getRuntime().availableProcessors();
+        ExecutorService executorService = new ThreadPoolExecutor(
+                processors, processors * 2,
+                30, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(10),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.AbortPolicy()
+        );
+        Future<Long> future = executorService.submit(() -> FibonacciUtil.fibonacci(N));
+        executorService.shutdown();
+        fibonacci = future.get();
+    }
+
+    @Test
+    public void m_13_completableFuture() {
+        name = getMethodName();
+        fibonacci = CompletableFuture.supplyAsync(() -> FibonacciUtil.fibonacci(N)).join();
+    }
+
+    private static String getMethodName() {
         return Thread.currentThread().getStackTrace()[2].getMethodName();
     }
 }

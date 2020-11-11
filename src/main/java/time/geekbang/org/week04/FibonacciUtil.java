@@ -2,15 +2,7 @@ package time.geekbang.org.week04;
 
 public class FibonacciUtil {
 
-    // 0 - 0
-    // 1 - 1
-    // 2 - 1
-    // 3 - 2
-    // 4 - 3
-    // 5 - 5
     public static long fibonacci(int n) {
-        String threadName = Thread.currentThread().getName();
-        System.out.printf("[%s] is starting...\n", threadName);
         if (n < 0) {
             throw new IllegalArgumentException("n must greater than or equal to 0");
         }
@@ -19,7 +11,7 @@ public class FibonacciUtil {
         while (n-- > 0) {
             a = (b += a) - a;
         }
-        System.out.printf("[%s] is done!\n", threadName);
+        System.out.printf("thread=[%s], ", Thread.currentThread().getName());
         return a;
     }
 }
