@@ -6,6 +6,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>xml-configuration</module>
+        <module>annotation-configuration</module>
+        <module>java-configuration</module>
     </modules>
 
     <parent>
