@@ -10,8 +10,8 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>annotation-configuration</artifactId>
-    <name>annotation-configuration</name>
+    <artifactId>java-configuration</artifactId>
+    <name>java-configuration</name>
 
     <properties>
         <spring-version>5.3.1</spring-version>

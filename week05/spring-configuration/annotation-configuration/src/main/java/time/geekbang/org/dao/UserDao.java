@@ -1,5 +1,5 @@
 package time.geekbang.org.dao;
 
-public interface Dao {
+public interface UserDao {
     void remove();
 }

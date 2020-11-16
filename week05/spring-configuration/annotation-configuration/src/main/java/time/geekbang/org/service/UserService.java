@@ -1,5 +1,5 @@
 package time.geekbang.org.service;
 
-public interface Service {
+public interface UserService {
     void remove();
 }
