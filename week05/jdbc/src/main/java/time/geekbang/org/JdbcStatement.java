@@ -2,7 +2,7 @@ package time.geekbang.org;
 
 import java.sql.*;
 
-public class JdbcRaw {
+public class JdbcStatement {
 
     // CREATE TABLE Employees (id INT NOT NULL, age INT NOT NULL, first VARCHAR(255), last VARCHAR(255));
     // INSERT INTO Employees VALUES (100, 18, 'Zara', 'Ali');
@@ -22,8 +22,7 @@ public class JdbcRaw {
             Class.forName(JDBC_DRIVER);
             conn = DriverManager.getConnection(DB_URL, USER, PASS);
             stmt = conn.createStatement();
-            String sql;
-            sql = "SELECT id, first, last, age FROM Employees";
+            String sql = "SELECT id, first, last, age FROM Employees";
             ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
