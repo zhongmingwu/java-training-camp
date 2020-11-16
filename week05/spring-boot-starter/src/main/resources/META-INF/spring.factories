@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=time.geekbang.org.config.SchoolAutoConfiguration
