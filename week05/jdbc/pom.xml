@@ -5,18 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <modules>
-        <module>spring-configuration</module>
-        <module>spring-boot-starter</module>
-        <module>jdbc</module>
+        <module>jdbc_raw</module>
     </modules>
 
     <parent>
         <groupId>time.geekbang.org</groupId>
-        <artifactId>java-training-camp</artifactId>
+        <artifactId>week05</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>week05</artifactId>
-    <name>week05</name>
-
+    <artifactId>jdbc</artifactId>
+    <name>jdbc</name>
 </project>
