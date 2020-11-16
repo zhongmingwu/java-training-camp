@@ -26,7 +26,7 @@ public class SchoolAutoConfiguration {
     private SchoolProperties schoolProperties;
 
     @Bean
-    public School mySchool() {
+    public School school() {
         List<Integer> studentIds = schoolProperties.getStudentIds();
         List<String> studentNames = schoolProperties.getStudentNames();
         List<Integer> classIds = schoolProperties.getKlassIds();

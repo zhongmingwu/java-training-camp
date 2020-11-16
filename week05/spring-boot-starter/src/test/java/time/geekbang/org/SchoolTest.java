@@ -18,5 +18,8 @@ public class SchoolTest {
     @Test
     public void test() {
         System.out.println(school.toString());
+
+        // Output
+        // School(klasses=[Klass(id=0, name=klass1, students=[Student(id=0, name=student1)]), Klass(id=1, name=klass2, students=[Student(id=1, name=student2)]), Klass(id=2, name=klass2, students=[Student(id=2, name=student3)])])
     }
 }

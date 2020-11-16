@@ -27,6 +27,7 @@ public class JdbcHikariCp {
     // INSERT INTO Cars VALUES(6, 'Citroen', 21000);
     // INSERT INTO Cars VALUES(7, 'Hummer', 41400);
     // INSERT INTO Cars VALUES(8, 'Volkswagen', 21600);
+    //
     // COMMIT;
 
     public static void main(String[] args) {
@@ -64,5 +65,18 @@ public class JdbcHikariCp {
                 lgr.log(Level.WARNING, ex.getMessage(), ex);
             }
         }
+
+        // Output
+        // [main] INFO com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Started.
+        // 1 Audi 52642
+        // 2 Mercedes 57127
+        // 3 Skoda 9000
+        // 4 Volvo 29000
+        // 5 Bentley 350000
+        // 6 Citroen 21000
+        // 7 Hummer 41400
+        // 8 Volkswagen 21600
+        // [main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Close initiated...
+        // [main] INFO com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Closed.
     }
 }

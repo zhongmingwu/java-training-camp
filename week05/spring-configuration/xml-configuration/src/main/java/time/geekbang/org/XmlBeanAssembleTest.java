@@ -8,5 +8,9 @@ public class XmlBeanAssembleTest {
         ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         System.out.println(context.getBean("u1"));
         System.out.println(context.getBean("u2"));
+
+        // Output
+        // User(name=Tom, password=123)
+        // User(name=Lucy, password=456)
     }
 }

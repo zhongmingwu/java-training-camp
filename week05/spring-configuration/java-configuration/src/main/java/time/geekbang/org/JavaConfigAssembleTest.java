@@ -9,5 +9,8 @@ public class JavaConfigAssembleTest {
         HelloWorld helloWorld = ctx.getBean(HelloWorld.class);
         helloWorld.setMessage("Hello World!");
         System.out.println(helloWorld.getMessage());
+
+        // Output
+        // Hello World!
     }
 }
