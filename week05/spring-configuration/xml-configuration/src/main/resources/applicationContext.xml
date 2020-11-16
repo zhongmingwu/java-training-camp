@@ -10,14 +10,14 @@
 
     <context:component-scan base-package="time.geekbang.org"/>
 
-    <bean id="s1" class="time.geekbang.org.bean.Student">
-        <property name="id" value="1"/>
-        <property name="name" value="s1"/>
+    <bean id="u1" class="time.geekbang.org.bean.User">
+        <constructor-arg index="0" value="Tom"/>
+        <constructor-arg index="1" value="123"/>
     </bean>
 
-    <bean id="s2" class="time.geekbang.org.bean.Student">
-        <property name="id" value="2"/>
-        <property name="name" value="s2"/>
+    <bean id="u2" class="time.geekbang.org.bean.User">
+        <property name="name" value="Lucy"/>
+        <property name="password" value="456"/>
     </bean>
 
 </beans>
