@@ -1,0 +1,29 @@
+spring:
+  shardingsphere:
+    datasource:
+      names: master,slave0,slave1
+      master:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:13306/e_commerce?useSSL=false
+        username: root
+        password: root
+      slave0:
+        type: ${spring.shardingsphere.datasource.master.type}
+        driver-class-name: ${spring.shardingsphere.datasource.master.driver-class-name}
+        url: jdbc:mysql://localhost:23306/e_commerce?useSSL=false
+        username: ${spring.shardingsphere.datasource.master.username}
+        password: ${spring.shardingsphere.datasource.master.password}
+      slave1:
+        type: ${spring.shardingsphere.datasource.master.type}
+        driver-class-name: ${spring.shardingsphere.datasource.master.driver-class-name}
+        url: jdbc:mysql://localhost:33306/e_commerce?useSSL=false
+        username: ${spring.shardingsphere.datasource.master.username}
+        password: ${spring.shardingsphere.datasource.master.password}
+    masterslave:
+      name: ms
+      master-data-source-name: master
+      slave-data-source-names: slave0,slave1
+    props:
+      sql:
+        show: true
