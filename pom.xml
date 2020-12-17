@@ -15,6 +15,7 @@
         <module>week04</module>
         <module>week05</module>
         <module>week07</module>
+        <module>week08</module>
     </modules>
 
     <name>java-training-camp</name>
