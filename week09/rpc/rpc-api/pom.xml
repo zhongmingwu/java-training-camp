@@ -10,7 +10,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>rpc-core</artifactId>
-    <name>rpc-core</name>
+    <artifactId>rpc-api</artifactId>
+    <name>rpc-api</name>
 
 </project>
