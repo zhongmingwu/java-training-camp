@@ -3,18 +3,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
-    <modules>
-        <module>rpc</module>
-        <module>tcc</module>
-    </modules>
 
     <parent>
         <groupId>time.geekbang.org</groupId>
-        <artifactId>java-training-camp</artifactId>
+        <artifactId>tcc</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>week09</artifactId>
-    <name>week09</name>
+    <artifactId>account</artifactId>
+    <name>account</name>
 </project>
