@@ -6,6 +6,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>lock</module>
+        <module>pubsub</module>
     </modules>
 
     <parent>
