@@ -21,7 +21,6 @@ public class RedisLockTest {
                 while (true) {
                     try {
                         counter.decrease();
-                        counter.decrease();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (RuntimeException e) {
@@ -37,26 +36,26 @@ public class RedisLockTest {
         }
 
         // output
-        //  19:21:17.402 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 19
-        //  19:21:17.408 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 18
-        //  19:21:17.408 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 17
-        //  19:21:17.408 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 16
-        //  19:21:17.408 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 15
-        //  19:21:17.409 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 14
-        //  19:21:17.409 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 13
-        //  19:21:17.409 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 12
-        //  19:21:17.409 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 11
-        //  19:21:17.410 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 10
-        //  19:21:17.410 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 9
-        //  19:21:17.410 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 8
-        //  19:21:17.410 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 7
-        //  19:21:17.411 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 6
-        //  19:21:17.411 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 5
-        //  19:21:17.411 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 4
-        //  19:21:17.411 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 3
-        //  19:21:17.412 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 2
-        //  19:21:17.412 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 1
-        //  19:21:17.412 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 0
+        //  19:54:22.309 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 19
+        //  19:54:22.322 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 18
+        //  19:54:22.322 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 17
+        //  19:54:22.323 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 16
+        //  19:54:22.323 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 15
+        //  19:54:22.324 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 14
+        //  19:54:22.324 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 13
+        //  19:54:22.324 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 12
+        //  19:54:22.325 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 11
+        //  19:54:22.325 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 10
+        //  19:54:22.326 [pool-1-thread-3] INFO time.geekbang.org.Counter - decrease successfully, current count: 9
+        //  19:54:22.326 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 8
+        //  19:54:22.327 [pool-1-thread-1] INFO time.geekbang.org.Counter - decrease successfully, current count: 7
+        //  19:54:22.327 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 6
+        //  19:54:22.327 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 5
+        //  19:54:22.328 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 4
+        //  19:54:22.328 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 3
+        //  19:54:22.329 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 2
+        //  19:54:22.330 [pool-1-thread-2] INFO time.geekbang.org.Counter - decrease successfully, current count: 1
+        //  19:54:22.330 [pool-1-thread-4] INFO time.geekbang.org.Counter - decrease successfully, current count: 0
     }
 
 }
