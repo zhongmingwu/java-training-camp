@@ -29,7 +29,7 @@ spring.jms.pub-sub-domain=true
 ```
 
 终端
-```
+```bash
 $ curl 'http://localhost:8080/sendTopicMsg?id=2&name=Netty'
 ```
 
