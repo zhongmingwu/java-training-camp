@@ -151,4 +151,10 @@ kafka-metrics-count:count:{client-id=consumer-perf-consumer-87406-1}
 ```
 
 # 4 Spring Kafka
+`hosts`文件要增加下面条目
+```
+127.0.0.1		kafka1
+127.0.0.1		kafka2
+127.0.0.1		kafka3
+```
 本项目代码参考：[Intro to Apache Kafka with Spring](https://www.baeldung.com/spring-kafka)
