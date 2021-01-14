@@ -6,6 +6,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>activemq</module>
+        <module>kafka</module>
     </modules>
 
     <parent>
